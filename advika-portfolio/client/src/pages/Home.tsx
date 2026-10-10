@@ -506,7 +506,9 @@ export default function Home() {
   const [activeExperience, setActiveExperience] = useState(0);
   const [activePhrase, setActivePhrase] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [formStatus, setFormStatus] = useState<
+    "idle" | "sending" | "sent" | "error"
+  >("idle");
   const [scrolled, setScrolled] = useState(false);
   const [revealRound, setRevealRound] = useState(0);
   const [photoFailed, setPhotoFailed] = useState(false);
@@ -550,9 +552,28 @@ export default function Home() {
     };
   }, []);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  // messages are delivered to Advika's inbox through Web3Forms
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSent(true);
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    data.append("access_key", import.meta.env.VITE_WEB3FORMS_ACCESS_KEY ?? "");
+    data.append("subject", `Portfolio message from ${data.get("name")}`);
+    data.append("from_name", "Advika's portfolio");
+    setFormStatus("sending");
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: data,
+      });
+      const result = await response.json();
+      if (!result.success) throw new Error(result.message);
+      form.reset();
+      setFormStatus("sent");
+    } catch {
+      setFormStatus("error");
+    }
   };
 
   return (
@@ -1163,10 +1184,11 @@ export default function Home() {
                 <br />
                 <em>question?</em>
               </h2>
-              <p>
-                I&apos;m always interested in thoughtful problems, generous
-                collaborators, and the space between a research question and a
-                useful thing.
+              {/* on laptops each span is its own line; below that they flow as one paragraph */}
+              <p className="contact-lines">
+                <span>I&apos;m always interested in thoughtful problems,</span>{" "}
+                <span>generous collaborators, and the space between a</span>{" "}
+                <span>research question and a useful thing.</span>
               </p>
               <div className="contact-links">
                 <a href="mailto:advika.nagool87@nmims.in">
@@ -1198,8 +1220,17 @@ export default function Home() {
                 <span className="mono">ADVIKA@PORTFOLIO:~$</span>
                 <span className="mono">CONTACT</span>
               </div>
-              {!sent ? (
+              {formStatus !== "sent" ? (
                 <div className="terminal-form-body">
+                  {/* honeypot: bots tick it, Web3Forms drops those messages */}
+                  <input
+                    type="checkbox"
+                    name="botcheck"
+                    className="form-honeypot"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    aria-hidden="true"
+                  />
                   <label>
                     <span>
                       <b>&gt;</b> enter_name
@@ -1226,11 +1257,30 @@ export default function Home() {
                       placeholder="Let’s build something interesting..."
                       rows={3}
                       required
+                      onKeyDown={event => {
+                        if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+                          event.preventDefault();
+                          event.currentTarget.form?.requestSubmit();
+                        }
+                      }}
                     />
                   </label>
-                  <button type="submit" className="execute-button">
-                    [ EXECUTE ] <ArrowRight size={15} />
+                  <button
+                    type="submit"
+                    className="execute-button"
+                    disabled={formStatus === "sending"}
+                  >
+                    {formStatus === "sending" ? "[ SENDING... ]" : "[ EXECUTE ]"}{" "}
+                    <ArrowRight size={15} />
                   </button>
+                  {formStatus === "error" && (
+                    <p className="form-error mono" role="alert">
+                      &gt; error: message_not_sent. Try again or email{" "}
+                      <a href="mailto:advika.nagool87@nmims.in">
+                        advika.nagool87@nmims.in
+                      </a>
+                    </p>
+                  )}
                 </div>
               ) : (
                 <div className="sent-state">
@@ -1243,7 +1293,7 @@ export default function Home() {
                   <button
                     type="button"
                     className="text-link light-link"
-                    onClick={() => setSent(false)}
+                    onClick={() => setFormStatus("idle")}
                   >
                     Send another <ArrowRight size={15} />
                   </button>

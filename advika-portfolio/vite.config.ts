@@ -225,6 +225,8 @@ function vitePluginAnalytics(): Plugin {
 const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), vitePluginStorageProxy(), vitePluginAnalytics()];
 
 export default defineConfig({
+  // GitHub Pages serves the site from /Portfolio/; local dev stays at /
+  base: process.env.GITHUB_PAGES ? "/Portfolio/" : "/",
   plugins,
   resolve: {
     alias: {

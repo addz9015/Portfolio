@@ -258,7 +258,7 @@ const achievements: {
       "Selected for the Excellence Batch and completed a deeper exploration of quantum computing, building stronger fundamentals through hands-on problem-solving, experimentation, and practical work with IBM Quantum systems.",
     tone: "dark",
     certificate: {
-      src: "/certificates/qiskit-gss-2026-badge.png",
+      src: `${import.meta.env.BASE_URL}certificates/qiskit-gss-2026-badge.png`,
       title: "Qiskit Global Summer School 2026 – Quantum Excellence",
       note: "IBM digital badge, Advanced level, earned through the Qiskit Global Summer School 2026 Excellence Batch.",
       badge: true,
@@ -271,7 +271,7 @@ const achievements: {
       "A hybrid LLM framework for emission-constrained supply chains with renewable-aware reinforcement learning, combining lifecycle emission constraints with intelligent optimization.",
     tone: "blue",
     certificate: {
-      src: "/certificates/comsys-2026.jpg",
+      src: `${import.meta.env.BASE_URL}certificates/comsys-2026.jpg`,
       title: "COMSYS 2026 Paper Presenter Certificate",
       note: 'Presenter of "A Hybrid LLM Framework for Emission-Constrained Supply Chains with Renewable-Aware RL" at the 7th International Conference on Frontiers in Computing and Systems, June 24–26, 2026, Mladá Boleslav, Czech Republic. Organised by Škoda Auto University and COMSYS Educational Trust, Kolkata.',
     },
@@ -283,7 +283,7 @@ const achievements: {
       "Secured second place for research on Quantum Key Distribution, exploring secure key exchange through quantum mechanics, the SCWZ protocol, and simulation of the complete communication process.",
     tone: "light",
     certificate: {
-      src: "/certificates/polarizer-2025.jpg",
+      src: `${import.meta.env.BASE_URL}certificates/polarizer-2025.jpg`,
       title: "Polarizer 2025 Certificate of Appreciation",
       note: "2nd place for an innovative research paper at Polarizer 2025, organised by the Basic Science & Humanities Department of NMIMS MPSTME, Mumbai, on 1 March 2025.",
     },
@@ -295,7 +295,7 @@ const achievements: {
       "Secured second place for a comparative study of LLMs and SLMs for text summarization, evaluating quality, inference efficiency, and real-time performance while exploring a hybrid approach.",
     tone: "dark",
     certificate: {
-      src: "/certificates/techskript-2025.jpg",
+      src: `${import.meta.env.BASE_URL}certificates/techskript-2025.jpg`,
       title: "TechSkript '25 Certificate of Merit",
       note: "1st Runner Up (team Stranger Things) at TechSkript '25, the poster and paper presentation competition organised by IEEE NMIMS MPSTME as part of Tech Safar 2025, NMIMS MPSTME's hardware techfest, on 12 April 2025.",
     },
@@ -307,7 +307,7 @@ const achievements: {
       "National gold medalist in archery and national-level player in rifle shooting.",
     tone: "blue",
     certificate: {
-      src: "/certificates/cisce-nationals.jpg",
+      src: `${import.meta.env.BASE_URL}certificates/cisce-nationals.jpg`,
       title: "CISCE National Sports & Games 2019 Certificate of Merit",
       note: "First position in Archery (Recurve), Under-14 Girls, at the Council's National Sports & Games 2019 (CISCE, affiliated to SGFI), held at La Martiniere College, Lucknow on 20 August 2019.",
     },
@@ -319,7 +319,7 @@ const achievements: {
       "Received a Certificate of Appreciation from Social Winter of Code (SWOC) 2026 for participating in the program and contributing to open-source projects, the start of my open-source journey.",
     tone: "light",
     certificate: {
-      src: "/certificates/swoc-2026.jpg",
+      src: `${import.meta.env.BASE_URL}certificates/swoc-2026.jpg`,
       title: "SWOC 2026 Certificate of Appreciation",
       note: "Signed by Abhishek Mankuskar (Creator & Leader, SWOC) and Jay Saadana (Creator, SWOC)",
       id: "d376053c7c6bc51761fcac1376bd23efadd",
@@ -610,7 +610,7 @@ export default function Home() {
               </AlertDialogCancel>
               <AlertDialogAction asChild className="resume-dialog-confirm">
                 <a
-                  href="/Advika_Nagool_Resume.pdf"
+                  href={`${import.meta.env.BASE_URL}Advika_Nagool_Resume.pdf`}
                   download="Advika_Nagool_Resume.pdf"
                 >
                   Yes, download <Download size={15} />
@@ -785,7 +785,7 @@ export default function Home() {
                     </div>
                   ) : (
                     <img
-                      src="/advika-photo.jpg"
+                      src={`${import.meta.env.BASE_URL}advika-photo.jpg`}
                       alt="Advika Nagool smiling in a teal blazer"
                       onError={() => setPhotoFailed(true)}
                     />

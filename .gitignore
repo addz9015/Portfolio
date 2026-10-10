@@ -1,0 +1,16 @@
+# Stray files in the outer folder (the site lives in advika-portfolio/)
+node_modules/
+/package.json
+/pnpm-lock.yaml
+/*.jpg
+
+# Personal source files next to the site, not part of it
+# (the site uses its own copies in advika-portfolio/client/public)
+advika-portfolio/*.pdf
+advika-portfolio/*.jpg
+advika-portfolio/*.jpeg
+advika-portfolio/*.png
+
+# Local tool caches and logs
+advika-portfolio/.vite/
+advika-portfolio/.manus-logs/

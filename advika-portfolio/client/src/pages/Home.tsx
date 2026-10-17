@@ -41,6 +41,7 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@/components/ui/dialog";
+import AboutChat from "@/components/AboutChat";
 import AsciiWaves from "@/components/AsciiWaves";
 import ProjectArt from "@/components/ProjectArt";
 
@@ -511,7 +512,6 @@ export default function Home() {
   >("idle");
   const [scrolled, setScrolled] = useState(false);
   const [revealRound, setRevealRound] = useState(0);
-  const [photoFailed, setPhotoFailed] = useState(false);
   const [flippedProjects, setFlippedProjects] = useState<
     Record<string, boolean>
   >({});
@@ -754,67 +754,7 @@ export default function Home() {
             <span>01 / ABOUT</span>
             <span className="rule" />
           </div>
-          <div className="manifesto-grid">
-            <div className="manifesto-main">
-              <p className="display-statement">
-                Not just a list of things I&apos;ve done.
-                <br />
-                <span>I like the messy middle.</span>
-              </p>
-              <div className="manifesto-copy">
-                <p className="manifesto-lead">
-                  That is where I like to spend my time{" "}
-                  <mark>understanding problems from the inside</mark>,
-                  questioning what I know, and experimenting until an idea
-                  starts to work. I enjoy taking complex ideas apart and
-                  figuring out what makes them tick, whether I&apos;m working
-                  with data, building an AI system, reading research, or
-                  following an unexpected rabbit hole. I&apos;m usually driven
-                  by the same question: <mark>why does this work?</mark>
-                </p>
-                <p>
-                  My interests span{" "}
-                  <strong>
-                    data science, machine learning, AI, and quantum computing
-                  </strong>
-                  , but curiosity rarely stays within one field. I like learning
-                  by trying, refining, and sometimes getting things wrong
-                  because the failed approach, unexpected result, or small
-                  correction can teach you more than the final solution.
-                </p>
-                <blockquote>
-                  That instinct follows me outside technology too. From hitting
-                  the{" "}
-                  <strong>bull&apos;s-eye in archery and rifle shooting</strong>{" "}
-                  to getting a guitar chord just right, I&apos;ve learned to
-                  appreciate{" "}
-                  <em>precision, patience, and the tiny adjustments</em> that
-                  make a difference. Different interests, same habit: keep
-                  experimenting, keep refining, and follow the question wherever
-                  it leads.
-                </blockquote>
-              </div>
-            </div>
-            <aside className="about-photo-column">
-              <figure className="about-photo">
-                <span className="about-photo-dots" aria-hidden="true" />
-                <div className="about-photo-frame">
-                  {photoFailed ? (
-                    <div className="about-photo-fallback" aria-hidden="true">
-                      <span>AN</span>
-                      <small>add /advika-photo.jpg</small>
-                    </div>
-                  ) : (
-                    <img
-                      src={`${import.meta.env.BASE_URL}advika-photo.jpg`}
-                      alt="Advika Nagool smiling in a teal blazer"
-                      onError={() => setPhotoFailed(true)}
-                    />
-                  )}
-                </div>
-              </figure>
-            </aside>
-          </div>
+          <AboutChat />
         </section>
 
         <section className="experience-section section-shell" id="experience">

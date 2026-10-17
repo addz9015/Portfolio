@@ -250,7 +250,7 @@ button.achievement-arrow:hover, button.achievement-arrow:focus-visible { backgro
 .form-error a { color: inherit; text-decoration: underline; }
 
 /* About: one chat window. The thread scrolls on the left while the photo stays still on the
-   right, and the ball lives in a layer over the visible thread so it never leaves it. */
+   right, and an archery target lands in a layer over the visible thread and takes an arrow. */
 .about-chat { max-width: 1380px; margin-top: 40px; border: 1px solid var(--rule); background: #eeece6; box-shadow: 14px 15px 0 var(--blue-soft); }
 .about-chat-head { display: flex; align-items: center; gap: 12px; padding: 13px 18px; border-bottom: 1px solid var(--rule); background: var(--surface); }
 .about-chat-avatar { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--ink); color: var(--paper); font-family: "Space Grotesk", sans-serif; font-size: 12px; font-weight: 700; letter-spacing: -.04em; }
@@ -260,14 +260,15 @@ button.achievement-arrow:hover, button.achievement-arrow:focus-visible { backgro
 .about-chat-online { width: 7px; height: 7px; border-radius: 50%; background: #3fae6a; box-shadow: 0 0 0 3px rgba(63,174,106,.18); }
 .about-chat-tag { margin-left: auto; color: var(--muted); font-size: 11px; letter-spacing: .04em; }
 
-.about-chat-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 34%); grid-template-rows: minmax(0, 1fr); height: clamp(520px, 74vh, 720px); }
+/* the photo column's width follows the box height (minus the 14px padding each side), so the
+   frame keeps roughly the portrait photo's own shape instead of cropping it */
+.about-chat-main { --chat-h: clamp(520px, 74vh, 720px); display: grid; grid-template-columns: minmax(0, 1fr) calc((var(--chat-h) - 28px) * .64 + 28px); grid-template-rows: minmax(0, 1fr); height: var(--chat-h); }
 .about-chat-photo { min-height: 0; margin: 0; padding: 14px; overflow: hidden; border-left: 1px solid var(--rule); background: var(--surface); }
 .about-chat-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; background: #ebe8e1; }
 .about-chat-photo .about-photo-fallback { height: 100%; }
 .about-chat-pane { position: relative; min-height: 0; }
-.about-chat-thread { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; height: 100%; padding: 26px 26px 120px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--blue) transparent; }
-.about-chat-ball-layer { position: absolute; inset: 0 10px 0 0; overflow: hidden; pointer-events: none; }
-.about-chat-ball-layer .ball { pointer-events: auto; }
+.about-chat-thread { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; height: 100%; padding: 26px 26px 160px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--blue) transparent; }
+.about-chat-target-layer { position: absolute; inset: 0 10px 0 0; overflow: hidden; pointer-events: none; }
 
 .chat-bubble { flex-shrink: 0; max-width: min(94%, 680px); padding: 16px 20px; border: 1px solid var(--rule); border-radius: 20px 20px 20px 6px; background: var(--surface); }
 .chat-bubble p { color: var(--graphite); font-size: 16px; line-height: 1.68; }
@@ -292,19 +293,52 @@ button.achievement-arrow:hover, button.achievement-arrow:focus-visible { backgro
 .chat-reveal { opacity: 0; transform: translateY(16px) scale(.97); transform-origin: left bottom; transition: opacity 420ms ease, transform 520ms var(--ease-out); }
 .chat-reveal.is-in { opacity: 1; transform: none; }
 
-/* the ball: spinning seams under a fixed highlight, so it reads as a sphere */
-.ball { position: absolute; top: 0; left: 0; z-index: 2; border-radius: 50%; cursor: grab; touch-action: none; user-select: none; filter: drop-shadow(0 7px 9px rgba(24,24,23,.25)); will-change: transform; }
-.ball-print { display: block; width: 100%; height: 100%; border-radius: 50%; }
-.ball-shade { position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 34% 28%, rgba(255,255,255,.75) 0%, rgba(255,255,255,.18) 18%, transparent 42%), radial-gradient(circle at 50% 50%, transparent 52%, rgba(0,0,0,.38) 100%); pointer-events: none; }
-.ball.is-grabbed { cursor: grabbing; filter: drop-shadow(0 13px 15px rgba(24,24,23,.3)); }
+/* the target: drops in, bounces to the floor, then an arrow flies in and sticks in the gold */
+.archery-scene { position: absolute; right: 3%; bottom: 10px; width: 100px; height: 130px; padding: 0; border: 0; background: none; cursor: pointer; pointer-events: auto; }
+.archery-scene:focus-visible { outline: 2px solid var(--blue); outline-offset: 6px; border-radius: 8px; }
+.archery-scene-body { width: 100%; height: 100%; transform-origin: 50% 100%; filter: drop-shadow(0 6px 7px rgba(24,24,23,.2)); }
+.archery-scene-body svg { display: block; width: 100%; height: 100%; }
+.archery-scene.is-waiting .archery-scene-body { opacity: 0; }
+/* arrow tip sits 10px into the bull's-eye at (50, 50) */
+.archery-scene-arrow { position: absolute; top: 42px; left: -72px; z-index: 1; width: 132px; height: 16px; opacity: 0; transform-origin: 100% 50%; pointer-events: none; }
+.archery-scene-arrow svg { display: block; width: 100%; height: 100%; overflow: visible; transform-origin: 100% 50%; }
+.archery-scene-ring { position: absolute; top: 35px; left: 35px; width: 30px; height: 30px; border: 2px solid var(--blue); border-radius: 50%; opacity: 0; pointer-events: none; }
 
-@media (max-width: 760px) {
-  /* phones: photo on top, thread grows with the page instead of scrolling inside the box */
+@media (max-width: 1000px) {
+  /* tablets and phones: photo on top in a 3:4 frame, thread grows with the page instead of
+     scrolling inside the box */
   .about-chat { box-shadow: 7px 8px 0 var(--blue-soft); }
   .about-chat-main { grid-template-columns: 1fr; grid-template-rows: auto; height: auto; }
-  .about-chat-photo { order: -1; height: 340px; padding: 10px; border-left: 0; border-bottom: 1px solid var(--rule); }
-  .about-chat-thread { height: auto; padding: 18px 14px 100px; overflow: visible; }
-  .about-chat-ball-layer { inset: 0; }
+  .about-chat-photo { order: -1; display: flex; justify-content: center; padding: 14px; border-left: 0; border-bottom: 1px solid var(--rule); }
+  .about-chat-photo img, .about-chat-photo .about-photo-fallback { width: min(100%, 340px); height: auto; aspect-ratio: 3 / 4; }
+  .about-chat-thread { height: auto; padding: 18px 14px 160px; overflow: visible; }
+  .about-chat-target-layer { inset: 0; }
+  .archery-scene { right: 6%; }
   .chat-bubble { max-width: 100%; padding: 14px 16px; }
   .chat-bubble p, .chat-bubble .chat-lead { font-size: 15px; }
+}
+
+/* Phone sizing pass: the name tiles fit inside the terminal, everything tappable is at least
+   ~44px (40px for small inline icons), and the smallest labels stay readable at 11px. */
+@media (max-width: 640px) {
+  /* 6 tiles + 5 × 3px gaps must fit the terminal body: 100vw − 2 × 20px gutter − 2 × 20px padding */
+  .flap-tile { width: calc((100vw - 95px) / 6); }
+
+  .menu-toggle { width: 44px; height: 44px; margin-right: -12px; }
+  .brand-lockup, .nav-resume, .back-top { min-height: 44px; }
+  .hero-actions .text-link { min-height: 44px; }
+  .whoami-button { padding: 8px 10px; margin: -6px 0 -6px -10px; }
+  .terminal-foot-action { min-height: 40px; padding: 4px 8px; margin-right: -8px; }
+  .project-icon-button { width: 42px; height: 42px; }
+  .project-back-close { width: 40px; height: 40px; }
+  .project-back-links a, .project-back-links button { min-height: 40px; }
+  .rail-button { width: 44px; height: 44px; }
+  .achievement-arrow { width: 42px; height: 42px; }
+  .contact-links { gap: 2px; }
+  .contact-links a { min-height: 44px; }
+  .terminal-form-body input { min-height: 44px; }
+
+  .brand-lockup { min-width: 44px; }
+  .hero-terminal-head, .terminal-foot, .tag, .timeline-role, .back-top, .terminal-form-foot, .site-footer p { font-size: 11px; }
+  .hero-stat span { max-width: 90px; font-size: 10px; }
 }

@@ -388,14 +388,15 @@ function SplitFlap({
   );
 }
 
-// Horizontal card rail: tracks the current card, steps one card at a time, and adds
+// Horizontal card rail: tracks which cards are on screen, steps one card at a time, and adds
 // click-and-drag for mouse users (touch and trackpads keep native scrolling).
 function useCardRail(count: number) {
   const ref = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; scroll: number; moved: boolean } | null>(
     null
   );
-  const [index, setIndex] = useState(0);
+  // first and last fully visible card (0-based); several fit at once on wide screens
+  const [visible, setVisible] = useState({ first: 0, last: 0 });
   const [edge, setEdge] = useState({ start: true, end: false });
 
   const cardStep = (rail: HTMLDivElement) => {
@@ -409,8 +410,26 @@ function useCardRail(count: number) {
     const rail = ref.current;
     if (!rail) return;
     const atEnd = rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 4;
-    setIndex(atEnd ? count - 1 : Math.round(rail.scrollLeft / cardStep(rail)));
-    setEdge({ start: rail.scrollLeft <= 4, end: atEnd });
+    // a card counts as on screen when at least 90% of it shows (scroll snapping can leave
+    // the last card a few pixels short of the edge)
+    const box = rail.getBoundingClientRect();
+    const shown = Array.from(rail.children).flatMap((card, i) => {
+      const r = card.getBoundingClientRect();
+      const seen = Math.min(r.right, box.right) - Math.max(r.left, box.left);
+      return seen >= r.width * 0.9 ? [i] : [];
+    });
+    let first: number;
+    let last: number;
+    if (shown.length) {
+      first = shown[0];
+      last = atEnd ? count - 1 : shown[shown.length - 1];
+    } else {
+      // a card wider than the rail: count the one nearest the left edge
+      first = last = Math.min(count - 1, Math.round(rail.scrollLeft / cardStep(rail)));
+    }
+    setVisible({ first, last });
+    // "next" switches off once the last card is on screen, even if a few px remain to scroll
+    setEdge({ start: rail.scrollLeft <= 4, end: atEnd || last === count - 1 });
   };
 
   // the end state depends on layout, so measure once mounted and on resize
@@ -458,7 +477,7 @@ function useCardRail(count: number) {
     onPointerLeave: endDrag,
   };
 
-  return { index, edge, step, railProps };
+  return { visible, edge, step, railProps };
 }
 
 function RailControls({
@@ -470,14 +489,21 @@ function RailControls({
   count: number;
   rail: ReturnType<typeof useCardRail>;
 }) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const first = rail.visible.first + 1;
+  const last = rail.visible.last + 1;
   return (
     <div className="rail-controls">
       <span className="rail-hint-label mono">
         <ArrowRight size={14} /> Drag / swipe to browse
       </span>
-      <span className="rail-count mono">
-        {String(rail.index + 1).padStart(2, "0")} /{" "}
-        {String(count).padStart(2, "0")}
+      {/* one card on screen: "03 / 06"; several: the visible range, "02–05 / 06" */}
+      <span
+        className="rail-count mono"
+        aria-label={`Showing ${label}s ${first} to ${last} of ${count}`}
+      >
+        {pad(first)}
+        {last !== first && <>&ndash;{pad(last)}</>} / {pad(count)}
       </span>
       <div className="rail-buttons">
         <button

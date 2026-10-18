@@ -89,7 +89,7 @@ const experiences: Experience[] = [
     index: "03",
     org: "DESIGN",
     company: "Bhavyata Foundation",
-    role: "Graphic Design Intern",
+    role: "Graphic Design Intern (Volunteer)",
     bullets: [
       "Created educational visual materials and learning aids for early childhood programs, including worksheets, flashcards, posters, and classroom displays.",
       "Supported lesson planning, bilingual content preparation, and activity-based teaching resources.",
